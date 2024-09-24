@@ -35,5 +35,9 @@ std::vector<Point2D> RecursiveBacktrackerExample::getVisitables(World* w, const 
 
   // todo: implement this
 
+  //Bool fors up right down left
+  //if one is available go to it without calling prng
+  //if multiple use prng
+
   return visitables;
 }
