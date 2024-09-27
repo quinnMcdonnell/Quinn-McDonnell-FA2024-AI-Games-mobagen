@@ -4,7 +4,11 @@
 #include <climits>
 bool RecursiveBacktrackerExample::Step(World* w) {
   // todo: implement this
-  return false;
+   
+
+    //std::vector<Point2D> vistables = getVisitables(w,);
+
+    return false;
 }
 
 void RecursiveBacktrackerExample::Clear(World* world) {
@@ -36,8 +40,37 @@ std::vector<Point2D> RecursiveBacktrackerExample::getVisitables(World* w, const 
   // todo: implement this
 
   //Bool fors up right down left
+  bool UP, RIGHT, DOWN, LEFT;
+  int totalAvailable = 0;
+
+  if (w->GetNorth(p))
+  {
+    UP = true;
+    totalAvailable++;
+  }
+
+  if (w->GetEast(p)) {
+    RIGHT = true;
+    totalAvailable++;
+  }
+
+  if (w->GetSouth(p)) {
+    DOWN = true;
+    totalAvailable++;
+  }
+
+  if (w->GetWest(p)) {
+    LEFT = true;
+    totalAvailable++;
+  }
+  
+  std::cout << totalAvailable << std::endl;
+  
   //if one is available go to it without calling prng
+  
+
   //if multiple use prng
+
 
   return visitables;
 }
