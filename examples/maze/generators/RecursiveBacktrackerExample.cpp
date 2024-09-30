@@ -4,9 +4,29 @@
 #include <climits>
 bool RecursiveBacktrackerExample::Step(World* w) {
   // todo: implement this
-   
+  auto sideOverTwo = w->GetSize() / 2;
+  if (stack.empty() && !visited[-sideOverTwo][-sideOverTwo])
+  {
+    stack.emplace_back(-sideOverTwo, -sideOverTwo);
 
-    //std::vector<Point2D> vistables = getVisitables(w,);
+    return true;
+  }
+
+   std::vector<Point2D> visitables = getVisitables(w, randomStartPoint(w));
+   int size = visitables.size();
+   if (size == 1)
+   {
+     w->GetNodeColor(visitables[0]).Shade100();
+     visited.emplace(visitables[0]);
+   } else 
+   {
+     int random = std::rand() % 100;
+     int random = random % size;
+     
+     //return neighbor that is visitables[random]
+   }
+
+
 
     return false;
 }
@@ -42,35 +62,23 @@ std::vector<Point2D> RecursiveBacktrackerExample::getVisitables(World* w, const 
   //Bool fors up right down left
   bool UP, RIGHT, DOWN, LEFT;
   int totalAvailable = 0;
+  UP = w->GetNorth(p);
+  RIGHT = w->GetEast(p);
+  DOWN = w->GetSouth(p);
+  LEFT = w->GetWest(p);
 
-  if (w->GetNorth(p))
-  {
-    UP = true;
-    totalAvailable++;
-  }
+  std::cout << p.x << p.y << UP << RIGHT << DOWN << LEFT << std::endl;
 
-  if (w->GetEast(p)) {
-    RIGHT = true;
-    totalAvailable++;
-  }
+  if (UP)
+     visited.find(w->GetNorth(p));
+  if (RIGHT)
+     visited.find(w->GetEast(p));
+  if (DOWN)
+     visited.find(w->GetSouth(p));
+  if (LEFT)
+     visited.find(w->GetWest(p));
 
-  if (w->GetSouth(p)) {
-    DOWN = true;
-    totalAvailable++;
-  }
-
-  if (w->GetWest(p)) {
-    LEFT = true;
-    totalAvailable++;
-  }
   
-  std::cout << totalAvailable << std::endl;
-  
-  //if one is available go to it without calling prng
-  
-
-  //if multiple use prng
-
 
   return visitables;
 }
