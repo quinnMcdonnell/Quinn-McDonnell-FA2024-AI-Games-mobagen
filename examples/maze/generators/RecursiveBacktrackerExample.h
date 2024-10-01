@@ -5,6 +5,7 @@
 #include "math/Point2D.h"
 #include <map>
 #include <vector>
+#include <algorithm>
 
 class RecursiveBacktrackerExample : public MazeGeneratorBase {
 private:
@@ -12,6 +13,11 @@ private:
   std::map<int, std::map<int, bool>> visited;  // naive. not optimal
   Point2D randomStartPoint(World* world);
   std::vector<Point2D> getVisitables(World* w, const Point2D& p);
+
+  bool vectorContains(const Point2D& p, const std::vector<Point2D>& v) 
+  { 
+	  return std::find(v.begin(), v.end(), p) != v.end();
+  }
 
 public:
   RecursiveBacktrackerExample() = default;

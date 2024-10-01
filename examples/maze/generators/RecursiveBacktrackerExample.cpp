@@ -2,6 +2,8 @@
 #include "Random.h"
 #include "RecursiveBacktrackerExample.h"
 #include <climits>
+#include <algorithm>
+
 bool RecursiveBacktrackerExample::Step(World* w) {
   // todo: implement this
   auto sideOverTwo = w->GetSize() / 2;
@@ -16,12 +18,12 @@ bool RecursiveBacktrackerExample::Step(World* w) {
    int size = visitables.size();
    if (size == 1)
    {
-     w->GetNodeColor(visitables[0]).Shade100();
+     w->SetNodeColor(visitables[0],Color::Red);
      visited.emplace(visitables[0]);
    } else 
    {
      int random = std::rand() % 100;
-     int random = random % size;
+     random = random % size;
      
      //return neighbor that is visitables[random]
    }
@@ -69,14 +71,22 @@ std::vector<Point2D> RecursiveBacktrackerExample::getVisitables(World* w, const 
 
   std::cout << p.x << p.y << UP << RIGHT << DOWN << LEFT << std::endl;
 
-  if (UP)
-     visited.find(w->GetNorth(p));
-  if (RIGHT)
-     visited.find(w->GetEast(p));
-  if (DOWN)
-     visited.find(w->GetSouth(p));
-  if (LEFT)
-     visited.find(w->GetWest(p));
+    if (UP)
+    if (!visited[p.Up().x][p.Up().y] && !vectorContains(p, stack)) 
+        visitables.push_back(p.Up());
+  
+    if (RIGHT)
+      if (!visited[p.Up().x][p.Up().y] && !vectorContains(p, stack)) 
+          visitables.push_back(p.Up());
+  
+    if (DOWN)
+      if (!visited[p.Up().x][p.Up().y] && !vectorContains(p, stack)) 
+          visitables.push_back(p.Up());
+  
+    if (LEFT)
+      if (!visited[p.Up().x][p.Up().y] && !vectorContains(p, stack)) 
+          visitables.push_back(p.Up());
+
 
   
 
