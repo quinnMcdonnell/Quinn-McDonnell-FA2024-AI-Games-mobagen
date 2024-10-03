@@ -20,25 +20,89 @@ bool RecursiveBacktrackerExample::Step(World* w) {
 
     if (visitables.empty())
     {
-      stack.pop_back();
-      w->SetNodeColor(stack[stack.size() - 1], Color::Black);
-      return true;
+      if (!stack.empty()) {
+          w->SetNodeColor(stack[stack.size() - 1], Color::Black);
+          stack.pop_back();
+        return true;
+      }
+      else
+      {
+          for (int i = 0; i < stack.size() - 1; i++)
+          {
+          w->SetNodeColor(stack[i], Color::Black);
+        }
+      }
+      
     }
 
-    int random = rand() % visitables.size();
-    auto next = visitables[random];
-    stack.push_back(next);
-    visited[next.x][next.y] = true;
-    
-    // break the wall between current and next current - next delta for the wall
-    
+    if (visitables.size() > 1)
+    {
+      int random = rand() % visitables.size();
+      auto next = visitables[random];
+      
+      auto delta = next - stack[stack.size() - 1];
 
-    //Change color
-    w->SetNodeColor(next, Color::Red);
+      if (delta.x == 1) {
+        w->SetEast(stack[stack.size() - 1], false);
+        w->SetWest(next, false);
+      }
 
+      if (delta.x == -1) {
+        w->SetWest(stack[stack.size() - 1], false);
+        w->SetEast(next, false);
+      }
+
+      if (delta.y == 1) {
+        w->SetSouth(stack[stack.size() - 1], false);
+        w->SetNorth(next, false);
+      }
+
+      if (delta.y == -1) {
+        w->SetNorth(stack[stack.size() - 1], false);
+        w->SetSouth(next, false);
+      }
+      
+      stack.push_back(next);
+      visited[next.x][next.y] = true;
+      w->SetNodeColor(next, Color::Red);
+
+
+
+    } else {
+      auto next = visitables[0];
+
+      auto delta = next - stack[stack.size() - 1];
+
+      if (delta.x == 1)
+      {
+        w->SetEast(stack[stack.size() - 1], false);
+        w->SetWest(next, false);
+      }
+
+      if (delta.x == -1) {
+        w->SetWest(stack[stack.size() - 1], false);
+        w->SetEast(next, false);
+      }
+
+      if (delta.y == 1) {
+        w->SetSouth(stack[stack.size() - 1], false);
+        w->SetNorth(next, false);
+      }
+
+      if (delta.y == -1) {
+        w->SetNorth(stack[stack.size() - 1], false);
+        w->SetSouth(next, false);
+      }
+
+      stack.push_back(next);
+      visited[next.x][next.y] = true;
+      w->SetNodeColor(next, Color::Red);
+
+    }
+     
   }
 
-    return false;
+    return true;
 }
 
 void RecursiveBacktrackerExample::Clear(World* world) {
@@ -69,35 +133,24 @@ std::vector<Point2D> RecursiveBacktrackerExample::getVisitables(World* w, const 
 
   // todo: implement this
 
-  //Bool fors up right down left
-  bool UP, RIGHT, DOWN, LEFT;
-  int totalAvailable = 0;
-  UP = w->GetSouth(p);
-  RIGHT = w->GetEast(p);
-  DOWN = w->GetNorth(p);
-  LEFT = w->GetWest(p);
-
-
-    if (UP)
-    if (!visited[p.Up().x][p.Up().y] && !vectorContains(p.Up(), stack) && p.y < -sideOver2) {
+int totalAvailable = 0;
+ 
+    if (!visited[p.Up().x][p.Up().y] && !vectorContains(p.Up(), stack) && p.y > -sideOver2) {
             visitables.push_back(p.Up());
             totalAvailable++;
           }
         
-    if (RIGHT)
       if (!visited[p.Right().x][p.Right().y] && !vectorContains(p.Right(), stack) && p.x < sideOver2) {
             visitables.push_back(p.Right());
             totalAvailable++;
           }
           
-    if (DOWN)
       if (!visited[p.Down().x][p.Down().y] && !vectorContains(p.Down(), stack) && p.y < sideOver2) {
             visitables.push_back(p.Down());
             totalAvailable++;
          }
          
-    if (LEFT)
-      if (!visited[p.Left().x][p.Left().y] && !vectorContains(p.Left(), stack) && p.x < -sideOver2) {
+      if (!visited[p.Left().x][p.Left().y] && !vectorContains(p.Left(), stack) && p.x > -sideOver2) {
             visitables.push_back(p.Left());
             totalAvailable++;
             }
