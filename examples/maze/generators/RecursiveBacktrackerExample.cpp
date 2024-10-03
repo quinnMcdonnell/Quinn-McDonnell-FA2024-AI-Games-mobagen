@@ -10,16 +10,33 @@ bool RecursiveBacktrackerExample::Step(World* w) {
   if (stack.empty() && !visited[-sideOverTwo][-sideOverTwo])
   {
     stack.emplace_back(-sideOverTwo, -sideOverTwo);
-
+    w->SetNodeColor({-sideOverTwo, -sideOverTwo}, Color::Red);
     return true;
   }
 
-  std::cout << stack.front().x << stack.front().y << std::endl;
+  if (!stack.empty()) {
+      //Get Neighbor
+    std::vector<Point2D> visitables = getVisitables(w, stack[stack.size() - 1]);
 
-   std::vector<Point2D> visitables = getVisitables(w, randomStartPoint(w));
-   w->SetNodeColor(visitables[0],Color::Red); 
+    if (visitables.empty())
+    {
+      stack.pop_back();
+      w->SetNodeColor(stack[stack.size() - 1], Color::Black);
+      return true;
+    }
 
+    int random = rand() % visitables.size();
+    auto next = visitables[random];
+    stack.push_back(next);
+    visited[next.x][next.y] = true;
+    
+    // break the wall between current and next current - next delta for the wall
+    
 
+    //Change color
+    w->SetNodeColor(next, Color::Red);
+
+  }
 
     return false;
 }
@@ -62,34 +79,34 @@ std::vector<Point2D> RecursiveBacktrackerExample::getVisitables(World* w, const 
 
 
     if (UP)
-    if (!visited[p.Up().x][p.Up().y] && !vectorContains(p.Up(), stack)) {
+    if (!visited[p.Up().x][p.Up().y] && !vectorContains(p.Up(), stack) && p.y < -sideOver2) {
             visitables.push_back(p.Up());
             totalAvailable++;
           }
         
     if (RIGHT)
-      if (!visited[p.Right().x][p.Right().y] && !vectorContains(p.Right(), stack)) {
+      if (!visited[p.Right().x][p.Right().y] && !vectorContains(p.Right(), stack) && p.x < sideOver2) {
             visitables.push_back(p.Right());
             totalAvailable++;
           }
           
     if (DOWN)
-      if (!visited[p.Down().x][p.Down().y] && !vectorContains(p.Down(), stack)) {
+      if (!visited[p.Down().x][p.Down().y] && !vectorContains(p.Down(), stack) && p.y < sideOver2) {
             visitables.push_back(p.Down());
             totalAvailable++;
          }
          
     if (LEFT)
-        if (!visited[p.Left().x][p.Left().y] && !vectorContains(p.Left(), stack)) {
+      if (!visited[p.Left().x][p.Left().y] && !vectorContains(p.Left(), stack) && p.x < -sideOver2) {
             visitables.push_back(p.Left());
             totalAvailable++;
             }
           
 
-    for (int i = 0; i < totalAvailable; i++)
-    {
-      std::cout << visitables[i].x << " " << visitables[i].y << std::endl;
-    }
+    //for (int i = 0; i < totalAvailable; i++)
+    //{
+    //  std::cout << visitables[i].x << " " << visitables[i].y << std::endl;
+    //}
 
   return visitables;
 }
