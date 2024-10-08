@@ -4,6 +4,32 @@
 #include <queue>
 #include "World.h"
 using namespace std;
+
+struct ASNode {
+  Point2D point;
+  int accDist;
+  int heuristicDist;
+  bool operator<(const ASNode& rhs) const { return heuristicDist > rhs.heuristicDist; }
+};
+
+// std::priority_queue<ASNode>
+//    queue;
+// queue.push(Point2D{x, y}, weight 0);
+
+//// bootstrap
+// Point2D start = {0, 0};
+// Point2D end = {5, 5};
+// queue.push(point = start, accDist = 0, heurdist = start.distanceTo(end));
+////
+// while (true) {
+//   // todo: create break conditions
+//   auto current : ASNode = queue.top();
+//   //
+//   // list of all visitables
+//   // add neighbors to the queue, pay attention to add 1 unit of distance to the accDist from the current node set the heurDist from the neighbor to
+//   // the end node queue.pop();
+// }
+
 std::vector<Point2D> Agent::generatePath(World* w) {
   unordered_map<Point2D, Point2D> cameFrom;  // to build the flowfield and build the path
   queue<Point2D> frontier;                   // to store next ones to visit
@@ -18,13 +44,21 @@ std::vector<Point2D> Agent::generatePath(World* w) {
 
   while (!frontier.empty()) {
     // get the current from frontier
+    
     // remove the current from frontierset
+    
     // mark current as visited
+    
     // getVisitableNeightbors(world, current) returns a vector of neighbors that are not visited, not cat, not block, not in the queue
+    
     // iterate over the neighs:
+    
     // for every neighbor set the cameFrom
+    
     // enqueue the neighbors to frontier and frontierset
+    
     // do this up to find a visitable border and break the loop
+
   }
 
   // if the border is not infinity, build the path from border to the cat using the camefrom map
