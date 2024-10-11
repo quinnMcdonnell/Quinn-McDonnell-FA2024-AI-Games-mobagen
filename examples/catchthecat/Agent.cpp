@@ -12,13 +12,9 @@ struct ASNode {
   bool operator<(const ASNode& rhs) const { return heuristicDist > rhs.heuristicDist; }
 };
 
-// std::priority_queue<ASNode>
-//    queue;
-// queue.push(Point2D{x, y}, weight 0);
-
 //// bootstrap
-// Point2D start = {0, 0};
-// Point2D end = {5, 5};
+ Point2D start = {0, 0};
+ Point2D end = {5, 5};
 // queue.push(point = start, accDist = 0, heurdist = start.distanceTo(end));
 ////
 // while (true) {
@@ -49,7 +45,7 @@ std::vector<Point2D> Agent::generatePath(World* w) {
     
     // mark current as visited
     
-    // getVisitableNeightbors(world, current) returns a vector of neighbors that are not visited, not cat, not block, not in the queue
+    // getVisitableNeighbors(world, current) returns a vector of neighbors that are not visited, not cat, not block, not in the queue
     
     // iterate over the neighs:
     
