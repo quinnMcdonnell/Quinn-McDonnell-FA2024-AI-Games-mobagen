@@ -9,12 +9,24 @@ struct ASNode {
   Point2D point;
   int accDist;
   int heuristicDist;
-  bool operator<(const ASNode& rhs) const { return heuristicDist > rhs.heuristicDist; }
+
+  Point2D getPoint() { return point; }
+
+  bool operator<(const ASNode& rhs) const 
+  { 
+      return heuristicDist + accDist > rhs.heuristicDist + rhs.accDist; 
+  }
 };
 
+int heuristics(Point2D p, int sideSizeOver2)
+{ 
+    if (p.x - p.y > 0 && p.x + p.y > 0) return sideSizeOver2 - p.x;
+}
+
 //// bootstrap
- Point2D start = {0, 0};
- Point2D end = {5, 5};
+ /*Point2D start = {0, 0};
+ Point2D end = {5, 5};*/
+
 // queue.push(point = start, accDist = 0, heurdist = start.distanceTo(end));
 ////
 // while (true) {
@@ -40,10 +52,13 @@ std::vector<Point2D> Agent::generatePath(World* w) {
 
   while (!frontier.empty()) {
     // get the current from frontier
+    auto current = frontier.front();
     
     // remove the current from frontierset
+    frontier.pop();
     
     // mark current as visited
+    visited.insert({current, true});
     
     // getVisitableNeighbors(world, current) returns a vector of neighbors that are not visited, not cat, not block, not in the queue
     
@@ -61,4 +76,30 @@ std::vector<Point2D> Agent::generatePath(World* w) {
   // if there isnt a reachable border, just return empty vector
   // if your vector is filled from the border to the cat, the first element is the catcher move, and the last element is the cat move
   return vector<Point2D>();
+}
+
+std::vector<Point2D> getsVisitablesNeighbors(World* w, const Point2D* current)
+{
+  auto sideOver2 = w->getWorldSideSize() / 2;
+  std::vector<Point2D> visitables;
+
+  //Check what's nearby
+
+ /* if (camefrom[current->Up().x && p.y > -sideOver2) {
+    visitables.push_back(p.Up());
+  }*/
+
+  //if (!visited[p.Right().x][p.Right().y] && !vectorContains(p.Right(), stack) && p.x < sideOver2) {
+  //  visitables.push_back(p.Right());
+  //}
+
+  //if (!visited[p.Down().x][p.Down().y] && !vectorContains(p.Down(), stack) && p.y < sideOver2) {
+  //  visitables.push_back(p.Down());
+  //}
+
+  //if (!visited[p.Left().x][p.Left().y] && !vectorContains(p.Left(), stack) && p.x > -sideOver2) {
+  //  visitables.push_back(p.Left());
+  //}
+
+  return visitables;
 }
