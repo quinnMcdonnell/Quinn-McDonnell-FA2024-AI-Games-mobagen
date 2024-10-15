@@ -39,10 +39,28 @@ int heuristics(Point2D p, int sideSizeOver2)
     if (p.y > abs(p.x)) return sideSizeOver2 - p.y;
 }
 
+std::vector<Point2D> getsVisitablesNeighbors(World* w, const Point2D& current, unordered_map<Point2D, bool> m) {
+  auto sideOver2 = w->getWorldSideSize() / 2;
+  std::vector<Point2D> visitables;
+
+  if (!m.at(current.Right()) && current.Right() == w->getCat() && w->isValidPosition(current.Right())) visitables.push_back(current.Right());
+
+  visitables.push_back({current.Left().x, current.y + 1});
+
+  if (!m.at(current.Down()) && current.Down() == w->getCat() && w->isValidPosition(current.Down())) visitables.push_back(current.Down());
+
+  if (!m.at(current.Left()) && current.Left() == w->getCat() && w->isValidPosition(current.Left())) visitables.push_back(current.Left());
+
+  visitables.push_back({current.Left().x, current.y - 1});
+
+  if (!m.at(current.Up()) && current.Up() == w->getCat() && w->isValidPosition(current.Up())) visitables.push_back(current.Up());
+
+  return visitables;
+}
 
 std::vector<Point2D> Agent::generatePath(World* w) {
   unordered_map<Point2D, Point2D> cameFrom;  // to build the flowfield and build the path
-  priority_queue<ASNode> frontier;                   // to store next ones to visit
+  priority_queue<ASNode> frontier;           // to store next ones to visit
   unordered_set<Point2D> frontierSet;        // OPTIMIZATION to check faster if a point is in the queue
   unordered_map<Point2D, bool> visited;      // use .at() to get data, if the element dont exist [] will give you wrong results
 
@@ -63,39 +81,51 @@ std::vector<Point2D> Agent::generatePath(World* w) {
     visited.insert({current.getPoint(), true});
 
     // getVisitableNeighbors(world, current) returns a vector of neighbors that are not visited, not cat, not block, not in the queue
-    vector<Point2D> neighbors = getsVisitablesNeighbors(w, &current.getPoint());
+    vector<Point2D> neighbors = getsVisitablesNeighbors(w, current.getPoint(), visited);
     
     // iterate over the neighs:
-    
+    for (int i = 0; i < neighbors.size(); i++)
+    {
+      cameFrom.insert({current.getPoint(), neighbors[i]});
 
+      if (neighbors[i].x == w->getWorldSideSize() / 2 || neighbors[i].x == -w->getWorldSideSize() / 2 || neighbors[i].y == w->getWorldSideSize() / 2
+          || neighbors[i].y == -w->getWorldSideSize() / 2) {
+        borderExit = neighbors[i];
+        break;
+      }
 
-    // for every neighbor set the cameFrom
-    
-    // enqueue the neighbors to frontier and frontierset
-    
-    // do this up to find a visitable border and break the loop
+      frontier.push({neighbors[i], heuristics(neighbors[i], w->getWorldSideSize() / 2)});
+      frontierSet.insert(neighbors[i]);
+    }
+
+    if (borderExit != Point2D::INFINITE)
+    {
+      break;
+    }
 
   }
 
+  
   // if the border is not infinity, build the path from border to the cat using the camefrom map
-  // if there isnt a reachable border, just return empty vector
-  // if your vector is filled from the border to the cat, the first element is the catcher move, and the last element is the cat move
-  return vector<Point2D>();
-}
+  if (borderExit != Point2D::INFINITE) {
+    std::vector<Point2D> path;
+    auto current = borderExit;
+      while(current != w->getCat())
+      {
+       path.push_back(current);
+       current = cameFrom[current];
+      }
 
-//bool vectorContains(const Point2D& p, const std::vector<Point2D>& v) { return std::find(v.begin(), v.end(), p) != v.end(); }
+      // if your vector is filled from the border to the cat, the first element is the catcher move, and the last element is the cat move
+      w->catcherCanMoveToPosition(path[0]);
+      w->catCanMoveToPosition(path[path.size() - 1]);
 
-std::vector<Point2D> getsVisitablesNeighbors(World* w, const Point2D& current)
-{
-  auto sideOver2 = w->getWorldSideSize() / 2;
-  std::vector<Point2D> visitables;
-
-  visitables.push_back(current.Right());
-  visitables.push_back({current.x + 1, current.y + 1});
-  visitables.push_back(current.Down());
-  visitables.push_back(current.Left());
-  visitables.push_back({current.x - 1, current.y - 1});
-  visitables.push_back(current.Up());
-
-  return visitables;
+      return path;
+  }
+  else
+  {
+    // if there isnt a reachable border, just return empty vector
+    return vector<Point2D>();
+  }
+  
 }
