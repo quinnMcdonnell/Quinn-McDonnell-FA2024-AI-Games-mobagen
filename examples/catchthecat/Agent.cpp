@@ -10,6 +10,12 @@ struct ASNode {
   int accDist;
   int heuristicDist;
 
+  ASNode(Point2D p, int h)
+  { 
+    point = p;
+    heuristicDist = h;
+  }
+
   Point2D getPoint() { return point; }
 
   bool operator<(const ASNode& rhs) const 
@@ -20,50 +26,49 @@ struct ASNode {
 
 int heuristics(Point2D p, int sideSizeOver2)
 { 
-    if (p.x - p.y > 0 && p.x + p.y > 0) return sideSizeOver2 - p.x;
+    //right
+    if (p.x > abs(p.y)) return sideSizeOver2 - p.x;
+
+    // down
+    if (-p.y > abs(p.x)) return sideSizeOver2 + p.y;
+
+    // left
+    if (-p.x > abs(p.y)) return sideSizeOver2 + p.x;
+
+    // up
+    if (p.y > abs(p.x)) return sideSizeOver2 - p.y;
 }
 
-//// bootstrap
- /*Point2D start = {0, 0};
- Point2D end = {5, 5};*/
-
-// queue.push(point = start, accDist = 0, heurdist = start.distanceTo(end));
-////
-// while (true) {
-//   // todo: create break conditions
-//   auto current : ASNode = queue.top();
-//   //
-//   // list of all visitables
-//   // add neighbors to the queue, pay attention to add 1 unit of distance to the accDist from the current node set the heurDist from the neighbor to
-//   // the end node queue.pop();
-// }
 
 std::vector<Point2D> Agent::generatePath(World* w) {
   unordered_map<Point2D, Point2D> cameFrom;  // to build the flowfield and build the path
-  queue<Point2D> frontier;                   // to store next ones to visit
+  priority_queue<ASNode> frontier;                   // to store next ones to visit
   unordered_set<Point2D> frontierSet;        // OPTIMIZATION to check faster if a point is in the queue
   unordered_map<Point2D, bool> visited;      // use .at() to get data, if the element dont exist [] will give you wrong results
 
   // bootstrap state
   auto catPos = w->getCat();
-  frontier.push(catPos);
+  frontier.push({catPos, heuristics(catPos, w->getWorldSideSize()/2)});
   frontierSet.insert(catPos);
   Point2D borderExit = Point2D::INFINITE;  // if at the end of the loop we dont find a border, we have to return random points
 
   while (!frontier.empty()) {
     // get the current from frontier
-    auto current = frontier.front();
+    auto current = frontier.top();
     
     // remove the current from frontierset
-    frontier.pop();
+    frontierSet.erase(current.getPoint());
     
     // mark current as visited
-    visited.insert({current, true});
-    
+    visited.insert({current.getPoint(), true});
+
     // getVisitableNeighbors(world, current) returns a vector of neighbors that are not visited, not cat, not block, not in the queue
+    vector<Point2D> neighbors = getsVisitablesNeighbors(w, &current.getPoint());
     
     // iterate over the neighs:
     
+
+
     // for every neighbor set the cameFrom
     
     // enqueue the neighbors to frontier and frontierset
@@ -78,28 +83,19 @@ std::vector<Point2D> Agent::generatePath(World* w) {
   return vector<Point2D>();
 }
 
-std::vector<Point2D> getsVisitablesNeighbors(World* w, const Point2D* current)
+//bool vectorContains(const Point2D& p, const std::vector<Point2D>& v) { return std::find(v.begin(), v.end(), p) != v.end(); }
+
+std::vector<Point2D> getsVisitablesNeighbors(World* w, const Point2D& current)
 {
   auto sideOver2 = w->getWorldSideSize() / 2;
   std::vector<Point2D> visitables;
 
-  //Check what's nearby
-
- /* if (camefrom[current->Up().x && p.y > -sideOver2) {
-    visitables.push_back(p.Up());
-  }*/
-
-  //if (!visited[p.Right().x][p.Right().y] && !vectorContains(p.Right(), stack) && p.x < sideOver2) {
-  //  visitables.push_back(p.Right());
-  //}
-
-  //if (!visited[p.Down().x][p.Down().y] && !vectorContains(p.Down(), stack) && p.y < sideOver2) {
-  //  visitables.push_back(p.Down());
-  //}
-
-  //if (!visited[p.Left().x][p.Left().y] && !vectorContains(p.Left(), stack) && p.x > -sideOver2) {
-  //  visitables.push_back(p.Left());
-  //}
+  visitables.push_back(current.Right());
+  visitables.push_back({current.x + 1, current.y + 1});
+  visitables.push_back(current.Down());
+  visitables.push_back(current.Left());
+  visitables.push_back({current.x - 1, current.y - 1});
+  visitables.push_back(current.Up());
 
   return visitables;
 }
