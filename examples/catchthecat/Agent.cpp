@@ -27,33 +27,50 @@ struct ASNode {
 int heuristics(Point2D p, int sideSizeOver2)
 { 
     //right
-    if (p.x > abs(p.y)) return sideSizeOver2 - p.x;
+  if (p.x - p.y > 0 && p.x + p.y > 0)
+    return (sideSizeOver2 / 2) - p.x;
 
-    // down
-    if (-p.y > abs(p.x)) return sideSizeOver2 + p.y;
+    if (p.x - p.y > 0 && p.x + p.y < 0) 
+        return (sideSizeOver2 / 2) - p.x;
 
-    // left
-    if (-p.x > abs(p.y)) return sideSizeOver2 + p.x;
+    if (p.x - p.y < 0 && p.x + p.y < 0) 
+        return (sideSizeOver2 / 2) - p.x;
 
-    // up
-    if (p.y > abs(p.x)) return sideSizeOver2 - p.y;
+    if (p.x - p.y < 0 && p.x + p.y > 0) 
+        return (sideSizeOver2 / 2) - p.x;
 }
 
 std::vector<Point2D> getsVisitablesNeighbors(World* w, const Point2D& current, unordered_map<Point2D, bool> m) {
   auto sideOver2 = w->getWorldSideSize() / 2;
   std::vector<Point2D> visitables;
 
-  if (!m.at(current.Right()) && current.Right() == w->getCat() && w->isValidPosition(current.Right())) visitables.push_back(current.Right());
+ /* auto c = current.Right();
+  auto ca = w->getCat();
+  auto fi = m.find(current) != m.end();*/
 
-  visitables.push_back({current.Left().x, current.y + 1});
+  if (m.find(current.Right()) == m.end() 
+      && current.Right() != w->getCat()) 
+      visitables.push_back(current.Right());
 
-  if (!m.at(current.Down()) && current.Down() == w->getCat() && w->isValidPosition(current.Down())) visitables.push_back(current.Down());
+  if (m.find({current.Left().x, current.y + 1}) == m.end() 
+      && current.Left() != w->getCat()) 
+      visitables.push_back({current.Left().x, current.y + 1});
 
-  if (!m.at(current.Left()) && current.Left() == w->getCat() && w->isValidPosition(current.Left())) visitables.push_back(current.Left());
+  if (m.find(current.Down()) == m.end() 
+      && current.Down() != w->getCat()) 
+      visitables.push_back(current.Down());
 
-  visitables.push_back({current.Left().x, current.y - 1});
+  if (m.find(current.Left()) == m.end() 
+      && current.Left() != w->getCat()) 
+      visitables.push_back(current.Left());
 
-  if (!m.at(current.Up()) && current.Up() == w->getCat() && w->isValidPosition(current.Up())) visitables.push_back(current.Up());
+  if (m.find({current.Left().x, current.y - 1}) == m.end() 
+      && current.Left() != w->getCat()) 
+      visitables.push_back({current.Left().x, current.y - 1});
+
+  if (m.find(current.Up()) == m.end() 
+      && current.Up() != w->getCat()) 
+      visitables.push_back(current.Up());
 
   return visitables;
 }
@@ -88,7 +105,11 @@ std::vector<Point2D> Agent::generatePath(World* w) {
     {
       cameFrom.insert({current.getPoint(), neighbors[i]});
 
-      if (neighbors[i].x == w->getWorldSideSize() / 2 || neighbors[i].x == -w->getWorldSideSize() / 2 || neighbors[i].y == w->getWorldSideSize() / 2
+      auto sc = w->getWorldSideSize() / 2;
+
+      if (neighbors[i].x == w->getWorldSideSize() / 2 
+          || neighbors[i].x == -w->getWorldSideSize() / 2 
+          || neighbors[i].y == w->getWorldSideSize() / 2
           || neighbors[i].y == -w->getWorldSideSize() / 2) {
         borderExit = neighbors[i];
         break;
@@ -102,7 +123,6 @@ std::vector<Point2D> Agent::generatePath(World* w) {
     {
       break;
     }
-
   }
 
   
