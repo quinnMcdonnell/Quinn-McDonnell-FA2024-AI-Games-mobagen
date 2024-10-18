@@ -1,6 +1,7 @@
 #include "Cat.h"
 #include "World.h"
 #include <stdexcept>
+#include <iostream>
 
  
 Point2D Cat::Move(World* world) {
@@ -10,11 +11,20 @@ Point2D Cat::Move(World* world) {
 
    if (path.size() > 0)
    {
-     return path.front();
+     //std::cout << "Path hit" << std::endl;
+
+     for (int i = 0; i < path.size(); i++)
+     {
+       std::cout << path[i].x << " " << path[i].y << std::endl;
+     }
+     std::cout << "move: " << path.back().x << " " << path.back().y << std::endl;
+     std::cout << "Cat Loc: " << pos.x << " " << pos.y << std::endl;
+     std::cout << std::endl;
+     return path.back();
    }
 
    //Include the Pathfinding here
-
+   std::cout << "Rand hit" << std::endl;
    switch (rand) {
      case 0:
        return World::NE(pos);
